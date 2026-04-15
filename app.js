@@ -231,6 +231,51 @@ let currentIndex = 0;
 let speechToken = 0;
 let activeAudio = null;
 
+const phonicsHintMap = {
+  c: { ipa: "/k/", zh: "可" },
+  k: { ipa: "/k/", zh: "可" },
+  g: { ipa: "/g/", zh: "个" },
+  b: { ipa: "/b/", zh: "不" },
+  d: { ipa: "/d/", zh: "得" },
+  f: { ipa: "/f/", zh: "夫" },
+  h: { ipa: "/h/", zh: "呵" },
+  j: { ipa: "/dʒ/", zh: "只" },
+  m: { ipa: "/m/", zh: "姆" },
+  n: { ipa: "/n/", zh: "呢" },
+  p: { ipa: "/p/", zh: "坡" },
+  r: { ipa: "/r/", zh: "日" },
+  s: { ipa: "/s/", zh: "丝" },
+  t: { ipa: "/t/", zh: "特" },
+  ch: { ipa: "/tʃ/", zh: "吃" },
+  sh: { ipa: "/ʃ/", zh: "诗" },
+  ph: { ipa: "/f/", zh: "夫" },
+  th: { ipa: "/θ/", zh: "思" },
+  tr: { ipa: "/tr/", zh: "拆读 tr" },
+  gr: { ipa: "/gr/", zh: "拆读 gr" },
+  a: { ipa: "/æ/", zh: "啊" },
+  e: { ipa: "/e/", zh: "诶短音" },
+  i: { ipa: "/ɪ/", zh: "衣短音" },
+  o: { ipa: "/ɒ/", zh: "哦短音" },
+  u: { ipa: "/ʌ/", zh: "啊短音" },
+  "a-e": { ipa: "/eɪ/", zh: "诶" },
+  ai: { ipa: "/eɪ/", zh: "诶" },
+  ay: { ipa: "/eɪ/", zh: "诶" },
+  oa: { ipa: "/oʊ/", zh: "欧" },
+  ee: { ipa: "/iː/", zh: "衣长音" },
+  ea: { ipa: "/iː/", zh: "衣长音" },
+  oo: { ipa: "/uː/ 或 /ʊ/", zh: "乌/呜短音" },
+  oe: { ipa: "/uː/ 或 /oʊ/", zh: "乌或欧" },
+  ou: { ipa: "/aʊ/", zh: "奥" },
+  ow: { ipa: "/aʊ/", zh: "奥" },
+  igh: { ipa: "/aɪ/", zh: "爱" },
+  ir: { ipa: "/ɜːr/", zh: "呃儿" },
+  air: { ipa: "/eər/", zh: "艾儿" },
+  ce: { ipa: "/s/", zh: "丝" },
+  ci: { ipa: "/s/", zh: "丝" },
+  cy: { ipa: "/s/", zh: "丝" },
+  ck: { ipa: "/k/", zh: "可" }
+};
+
 function wait(ms) {
   return new Promise((resolve) => {
     window.setTimeout(resolve, ms);
@@ -330,56 +375,8 @@ function speakOnce(text) {
   });
 }
 
-function normalizePhonicsSound(sound) {
-  const map = {
-    ch: "chuh",
-    sh: "shuh",
-    ph: "fuh",
-    th: "thuh",
-    ng: "ng",
-    ee: "eee",
-    ea: "eee",
-    oo: "ooo",
-    oo_short: "uu",
-    ai: "ay",
-    ay: "ay",
-    oa: "oh",
-    ow: "ow",
-    ou: "ow",
-    igh: "eye",
-    ir: "er",
-    er: "er",
-    ar: "ar",
-    or: "or",
-    uh: "uh",
-    ih: "ih",
-    eh: "eh",
-    ah: "ah",
-    oh: "oh",
-    oo_long: "ooo",
-    eye: "eye",
-    air: "air",
-    buh: "buh",
-    kuh: "kuh",
-    duh: "duh",
-    guh: "guh",
-    f: "fff",
-    h: "hhh",
-    j: "juh",
-    k: "kuh",
-    m: "mmm",
-    n: "nnn",
-    p: "puh",
-    r: "rrr",
-    s: "sss",
-    t: "tuh",
-    v: "vvv",
-    w: "wuh",
-    y: "yuh",
-    z: "zzz"
-  };
-
-  return map[sound] || sound;
+function getPhonicsHint(piece) {
+  return phonicsHintMap[piece] || { ipa: "", zh: "按拼读规则读" };
 }
 
 async function speakPhonicsPieces(sounds, currentToken) {
@@ -388,7 +385,7 @@ async function speakPhonicsPieces(sounds, currentToken) {
       return false;
     }
 
-    const ok = await speakOnce(normalizePhonicsSound(sounds[i]));
+    const ok = await speakOnce(sounds[i]);
     if (!ok) {
       return false;
     }
@@ -426,7 +423,7 @@ async function playWordSequence(item) {
     }
   }
 
-  playHint.textContent = "未找到这个单词的固定音频，暂时改用浏览器朗读。";
+  playHint.textContent = "未找到固定拼读音频。为避免误导，拆分发音请按卡片上的 IPA 和中文提示跟读。";
 
   const fullOnceOk = await speakOnce(item.word);
   if (!fullOnceOk || currentToken !== speechToken) {
@@ -436,9 +433,7 @@ async function playWordSequence(item) {
 
   await wait(700);
 
-  const phonicsOk = await speakPhonicsPieces(item.phonicsSounds, currentToken);
-  if (!phonicsOk || currentToken !== speechToken) {
-    playHint.textContent = "当前浏览器不支持自动朗读。";
+  if (currentToken !== speechToken) {
     return;
   }
 
@@ -466,7 +461,15 @@ function renderCurrentWord() {
   wordText.textContent = item.word;
   phonicsRule.textContent = item.rule;
   phonicsBreakdown.innerHTML = item.phonics
-    .map((piece) => `<span class="phonics-chip">${piece}</span>`)
+    .map((piece) => {
+      const hint = getPhonicsHint(piece);
+      return `
+        <span class="phonics-chip">
+          <strong>${piece}</strong>
+          <small>${hint.ipa} ${hint.zh}</small>
+        </span>
+      `;
+    })
     .join("");
 
   playWordSequence(item);
