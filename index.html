@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#ff8d5c" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <title>Movers Phonics Cards</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="phone-app">
+      <section class="top-bar">
+        <p class="mini-label">Cambridge Movers</p>
+        <h1>自然拼读背单词</h1>
+        <p class="subtitle">按场景学 Movers 单词，先整词读，再拆分读，最后再整词读。</p>
+      </section>
+
+      <section class="card-shell">
+        <div class="progress-row">
+          <span id="progressText" class="progress-text"></span>
+          <div class="tag-row">
+            <span id="sceneTag" class="scene-tag"></span>
+            <span id="categoryTag" class="category-tag"></span>
+          </div>
+        </div>
+
+        <article class="word-card">
+          <div id="wordEmoji" class="word-emoji" aria-hidden="true"></div>
+          <p id="wordCn" class="word-cn"></p>
+          <h2 id="wordText" class="word-text"></h2>
+          <div id="phonicsBreakdown" class="phonics-breakdown"></div>
+          <p id="phonicsRule" class="phonics-rule"></p>
+          <p id="playHint" class="play-hint">进入单词卡后会自动播放一轮三段式朗读。</p>
+        </article>
+
+        <div class="button-stack">
+          <button id="replayBtn" class="secondary-btn" type="button">再读一轮</button>
+          <button id="nextBtn" class="primary-btn" type="button">下一个</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
