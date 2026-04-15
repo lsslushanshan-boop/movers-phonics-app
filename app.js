@@ -229,11 +229,88 @@ const nextBtn = document.getElementById("nextBtn");
 
 let currentIndex = 0;
 let speechToken = 0;
+let activeAudio = null;
 
 function wait(ms) {
   return new Promise((resolve) => {
     window.setTimeout(resolve, ms);
   });
+}
+
+function sanitizeWord(word) {
+  return word.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+}
+
+function stopActiveAudio() {
+  if (activeAudio) {
+    activeAudio.pause();
+    activeAudio.currentTime = 0;
+    activeAudio = null;
+  }
+}
+
+function stopPlayback() {
+  stopActiveAudio();
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+  }
+}
+
+function getAudioSources(item) {
+  const slug = sanitizeWord(item.word);
+  const phonicsSources = item.phonics.map((_, index) => `audio/phonics/${slug}/${index + 1}.mp3`);
+
+  return {
+    whole: `audio/words/${slug}.mp3`,
+    phonics: phonicsSources
+  };
+}
+
+function playAudioFile(src) {
+  return new Promise((resolve) => {
+    const audio = new Audio(src);
+    activeAudio = audio;
+
+    audio.onended = () => {
+      if (activeAudio === audio) {
+        activeAudio = null;
+      }
+      resolve(true);
+    };
+
+    audio.onerror = () => {
+      if (activeAudio === audio) {
+        activeAudio = null;
+      }
+      resolve(false);
+    };
+
+    audio.play().catch(() => {
+      if (activeAudio === audio) {
+        activeAudio = null;
+      }
+      resolve(false);
+    });
+  });
+}
+
+async function playAudioSequence(sources, currentToken) {
+  for (let i = 0; i < sources.length; i += 1) {
+    if (currentToken !== speechToken) {
+      return false;
+    }
+
+    const ok = await playAudioFile(sources[i]);
+    if (!ok) {
+      return false;
+    }
+
+    if (i < sources.length - 1) {
+      await wait(800);
+    }
+  }
+
+  return true;
 }
 
 function speakOnce(text) {
@@ -253,13 +330,65 @@ function speakOnce(text) {
   });
 }
 
+function normalizePhonicsSound(sound) {
+  const map = {
+    ch: "chuh",
+    sh: "shuh",
+    ph: "fuh",
+    th: "thuh",
+    ng: "ng",
+    ee: "eee",
+    ea: "eee",
+    oo: "ooo",
+    oo_short: "uu",
+    ai: "ay",
+    ay: "ay",
+    oa: "oh",
+    ow: "ow",
+    ou: "ow",
+    igh: "eye",
+    ir: "er",
+    er: "er",
+    ar: "ar",
+    or: "or",
+    uh: "uh",
+    ih: "ih",
+    eh: "eh",
+    ah: "ah",
+    oh: "oh",
+    oo_long: "ooo",
+    eye: "eye",
+    air: "air",
+    buh: "buh",
+    kuh: "kuh",
+    duh: "duh",
+    guh: "guh",
+    f: "fff",
+    h: "hhh",
+    j: "juh",
+    k: "kuh",
+    m: "mmm",
+    n: "nnn",
+    p: "puh",
+    r: "rrr",
+    s: "sss",
+    t: "tuh",
+    v: "vvv",
+    w: "wuh",
+    y: "yuh",
+    z: "zzz"
+  };
+
+  return map[sound] || sound;
+}
+
 async function speakPhonicsPieces(sounds, currentToken) {
   for (let i = 0; i < sounds.length; i += 1) {
     if (currentToken !== speechToken) {
       return false;
     }
 
-    const ok = await speakOnce(sounds[i]);
+    const ok = await speakOnce(normalizePhonicsSound(sounds[i]));
     if (!ok) {
       return false;
     }
@@ -275,12 +404,29 @@ async function speakPhonicsPieces(sounds, currentToken) {
 async function playWordSequence(item) {
   speechToken += 1;
   const currentToken = speechToken;
+  const audioSources = getAudioSources(item);
 
-  if ("speechSynthesis" in window) {
-    window.speechSynthesis.cancel();
-  }
+  stopPlayback();
 
   playHint.textContent = "正在播放：整词 1 遍 -> 拆分读 1 遍 -> 整词 1 遍。";
+
+  const wholeAudioOk = await playAudioFile(audioSources.whole);
+  if (wholeAudioOk && currentToken === speechToken) {
+    await wait(700);
+
+    const phonicsAudioOk = await playAudioSequence(audioSources.phonics, currentToken);
+    if (phonicsAudioOk && currentToken === speechToken) {
+      await wait(700);
+
+      const wholeAgainAudioOk = await playAudioFile(audioSources.whole);
+      if (wholeAgainAudioOk && currentToken === speechToken) {
+        playHint.textContent = "正在使用固定音频播放，发音会更稳定。";
+        return;
+      }
+    }
+  }
+
+  playHint.textContent = "未找到这个单词的固定音频，暂时改用浏览器朗读。";
 
   const fullOnceOk = await speakOnce(item.word);
   if (!fullOnceOk || currentToken !== speechToken) {
@@ -336,4 +482,3 @@ nextBtn.addEventListener("click", () => {
 });
 
 renderCurrentWord();
-
