@@ -112,19 +112,21 @@ const phonicsBreakdown = document.getElementById("phonicsBreakdown");
 const phonicsTip = document.getElementById("phonicsTip");
 const replayBtn = document.getElementById("replayBtn");
 const nextBtn = document.getElementById("nextBtn");
-const revealBtn = document.getElementById("revealBtn");
-const readAnswerBtn = document.getElementById("readAnswerBtn");
-const practiceActions = document.getElementById("practiceActions");
-const learnModeBtn = document.getElementById("learnModeBtn");
-const practiceModeBtn = document.getElementById("practiceModeBtn");
+const practicePanel = document.getElementById("practicePanel");
+const answerSlots = document.getElementById("answerSlots");
+const letterBank = document.getElementById("letterBank");
+const feedbackText = document.getElementById("feedbackText");
+const confirmBtn = document.getElementById("confirmBtn");
+const clearBtn = document.getElementById("clearBtn");
 
 let currentSceneIndex = 0;
 let currentWordIndex = 0;
-let mode = "learn";
-let answerVisible = true;
+let phase = "study";
 let speechToken = 0;
 let activeAudio = null;
 let scenePickerVisible = false;
+let practiceLetters = [];
+let selectedLetterIds = [];
 
 function wait(ms) {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
@@ -142,6 +144,24 @@ function getCurrentWord() {
   return getCurrentScene().words[currentWordIndex];
 }
 
+function shuffleArray(items) {
+  const arr = [...items];
+  for (let i = arr.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function createPracticeLetters(word) {
+  return shuffleArray(
+    word.split("").map((letter, index) => ({
+      id: `${letter}-${index}`,
+      letter
+    }))
+  );
+}
+
 function loadProgress() {
   try {
     const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || "{}");
@@ -151,9 +171,8 @@ function loadProgress() {
     if (Number.isInteger(saved.wordIndex) && saved.wordIndex >= 0 && saved.wordIndex < scenes[currentSceneIndex].words.length) {
       currentWordIndex = saved.wordIndex;
     }
-    if (saved.mode === "practice") {
-      mode = "practice";
-      answerVisible = false;
+    if (saved.phase === "practice") {
+      phase = "practice";
     }
   } catch (error) {
     console.warn("Failed to load progress:", error);
@@ -164,7 +183,7 @@ function saveProgress() {
   const payload = {
     sceneIndex: currentSceneIndex,
     wordIndex: currentWordIndex,
-    mode
+    phase
   };
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
 }
@@ -288,12 +307,108 @@ async function playWordSequence(item) {
   await speakOnce(item.word);
 }
 
-function updateModeButtons() {
-  const learnActive = mode === "learn";
-  learnModeBtn.classList.toggle("active", learnActive);
-  practiceModeBtn.classList.toggle("active", !learnActive);
-  learnModeBtn.setAttribute("aria-selected", String(learnActive));
-  practiceModeBtn.setAttribute("aria-selected", String(!learnActive));
+function playTone(type) {
+  const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextCtor) {
+    return;
+  }
+
+  const context = new AudioContextCtor();
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+
+  oscillator.connect(gain);
+  gain.connect(context.destination);
+
+  const start = context.currentTime;
+  const notes = type === "success" ? [523.25, 659.25, 783.99] : [330, 246.94];
+
+  notes.forEach((frequency, index) => {
+    oscillator.frequency.setValueAtTime(frequency, start + index * 0.12);
+  });
+
+  oscillator.type = type === "success" ? "triangle" : "sawtooth";
+  gain.gain.setValueAtTime(0.001, start);
+  gain.gain.exponentialRampToValueAtTime(0.16, start + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.001, start + notes.length * 0.12 + 0.16);
+
+  oscillator.start(start);
+  oscillator.stop(start + notes.length * 0.12 + 0.18);
+  oscillator.onended = () => {
+    context.close();
+  };
+}
+
+function setFeedback(message, type = "") {
+  feedbackText.textContent = message;
+  feedbackText.classList.toggle("is-success", type === "success");
+  feedbackText.classList.toggle("is-error", type === "error");
+}
+
+function getSelectedWord() {
+  return selectedLetterIds
+    .map((id) => practiceLetters.find((item) => item.id === id)?.letter || "")
+    .join("");
+}
+
+function resetPracticeState() {
+  practiceLetters = createPracticeLetters(getCurrentWord().word);
+  selectedLetterIds = [];
+  setFeedback("");
+}
+
+function renderAnswerSlots() {
+  const targetLength = getCurrentWord().word.length;
+  const selectedLetters = selectedLetterIds.map((id) => practiceLetters.find((item) => item.id === id)?.letter || "");
+  const html = [];
+
+  for (let i = 0; i < targetLength; i += 1) {
+    const letter = selectedLetters[i];
+    if (letter) {
+      const selectedId = selectedLetterIds[i];
+      html.push(
+        `<button class="answer-slot" type="button" data-selected-id="${selectedId}" aria-label="移除字母 ${letter}">${letter}</button>`
+      );
+    } else {
+      html.push('<span class="answer-slot is-empty" aria-hidden="true">_</span>');
+    }
+  }
+
+  answerSlots.innerHTML = html.join("");
+
+  answerSlots.querySelectorAll("[data-selected-id]").forEach((button) => {
+    button.addEventListener("click", () => {
+      selectedLetterIds = selectedLetterIds.filter((id) => id !== button.dataset.selectedId);
+      renderPracticeBoard();
+    });
+  });
+}
+
+function renderLetterBank() {
+  letterBank.innerHTML = practiceLetters
+    .map((item) => {
+      const used = selectedLetterIds.includes(item.id);
+      return `<button class="letter-btn" type="button" data-letter-id="${item.id}" ${used ? "disabled" : ""}>${item.letter}</button>`;
+    })
+    .join("");
+
+  letterBank.querySelectorAll("[data-letter-id]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const { letterId } = button.dataset;
+      if (selectedLetterIds.includes(letterId)) {
+        return;
+      }
+      selectedLetterIds.push(letterId);
+      renderPracticeBoard();
+    });
+  });
+}
+
+function renderPracticeBoard() {
+  renderAnswerSlots();
+  renderLetterBank();
+  confirmBtn.disabled = selectedLetterIds.length !== getCurrentWord().word.length;
+  clearBtn.disabled = selectedLetterIds.length === 0;
 }
 
 function renderScenePicker() {
@@ -314,7 +429,8 @@ function renderScenePicker() {
       currentSceneIndex = Number(button.dataset.sceneIndex);
       currentWordIndex = 0;
       scenePickerVisible = false;
-      answerVisible = mode === "learn";
+      phase = "study";
+      resetPracticeState();
       saveProgress();
       renderAll();
     });
@@ -324,52 +440,44 @@ function renderScenePicker() {
 function renderCurrentWord() {
   const scene = getCurrentScene();
   const item = getCurrentWord();
-  const sceneLabel = `场景 ${currentSceneIndex + 1} / ${scenes.length}`;
-  const shouldHideWord = mode === "practice" && !answerVisible;
+  const isPractice = phase === "practice";
 
   progressText.textContent = `${currentWordIndex + 1} / ${scene.words.length}`;
   sceneTag.textContent = scene.title;
   categoryTag.textContent = item.category;
-  sceneMeta.textContent = `${sceneLabel} · ${mode === "learn" ? "先听再看" : "先猜再验证"}`;
+  sceneMeta.textContent = `场景 ${currentSceneIndex + 1} / ${scenes.length} · ${isPractice ? "拼字练习" : "学习朗读"}`;
   wordEmoji.textContent = item.emoji;
   wordCn.textContent = item.cn;
-  wordText.textContent = shouldHideWord ? "•••••" : item.word;
-  wordText.classList.toggle("is-hidden", shouldHideWord);
-  practiceHint.hidden = mode !== "practice";
-  phonicsTip.textContent = item.tip;
+  wordText.textContent = isPractice ? "拼一拼这个单词" : item.word;
+  wordText.classList.toggle("is-hidden", isPractice);
+  practiceHint.hidden = !isPractice;
   phonicsBreakdown.innerHTML = item.phonics
     .map((piece) => `<span class="phonics-chip">${piece}</span>`)
     .join("");
+  phonicsTip.textContent = isPractice ? "提示：可以先看音块顺序，再去字母里找对应部分。" : item.tip;
+  practicePanel.hidden = !isPractice;
 
-  practiceActions.hidden = mode !== "practice";
-  revealBtn.textContent = answerVisible ? "隐藏答案" : "显示答案";
-  readAnswerBtn.disabled = shouldHideWord;
-  replayBtn.textContent = mode === "learn" ? "再读一轮" : "再听答案";
-
-  if (mode === "learn") {
-    playWordSequence(item);
-  } else if (answerVisible) {
-    playWordSequence(item);
-  } else {
+  if (isPractice) {
+    renderPracticeBoard();
     stopPlayback();
+  } else {
+    setFeedback("");
+    playWordSequence(item);
   }
 }
 
 function renderAll() {
-  updateModeButtons();
   renderScenePicker();
   renderCurrentWord();
 }
 
-function setMode(nextMode) {
-  if (mode === nextMode) {
-    return;
-  }
-
-  mode = nextMode;
-  answerVisible = mode === "learn";
+function moveToNextWord() {
+  const scene = getCurrentScene();
+  currentWordIndex = (currentWordIndex + 1) % scene.words.length;
+  phase = "practice";
+  resetPracticeState();
   saveProgress();
-  renderAll();
+  renderCurrentWord();
 }
 
 sceneTag.addEventListener("click", () => {
@@ -377,42 +485,41 @@ sceneTag.addEventListener("click", () => {
   renderScenePicker();
 });
 
-learnModeBtn.addEventListener("click", () => {
-  setMode("learn");
-});
-
-practiceModeBtn.addEventListener("click", () => {
-  setMode("practice");
-});
-
 replayBtn.addEventListener("click", () => {
-  if (mode === "practice" && !answerVisible) {
-    return;
-  }
-  playWordSequence(getCurrentWord());
-});
-
-revealBtn.addEventListener("click", () => {
-  answerVisible = !answerVisible;
-  renderCurrentWord();
-});
-
-readAnswerBtn.addEventListener("click", () => {
-  if (!answerVisible) {
-    answerVisible = true;
-    renderCurrentWord();
+  if (phase === "practice") {
+    setFeedback("先把字母拼出来，再按“确定”试试看。");
     return;
   }
   playWordSequence(getCurrentWord());
 });
 
 nextBtn.addEventListener("click", () => {
-  const scene = getCurrentScene();
-  currentWordIndex = (currentWordIndex + 1) % scene.words.length;
-  answerVisible = mode === "learn";
-  saveProgress();
-  renderCurrentWord();
+  moveToNextWord();
+});
+
+confirmBtn.addEventListener("click", () => {
+  const attempt = getSelectedWord().toLowerCase();
+  const correct = getCurrentWord().word.toLowerCase();
+
+  if (attempt === correct) {
+    phase = "study";
+    saveProgress();
+    playTone("success");
+    setFeedback("答对了，真棒！已经帮你切回学习卡片。", "success");
+    renderCurrentWord();
+    return;
+  }
+
+  playTone("error");
+  setFeedback("还不对哦，再试一次。你也可以点上面的字母把它放回去重拼。", "error");
+});
+
+clearBtn.addEventListener("click", () => {
+  selectedLetterIds = [];
+  setFeedback("已清空，重新拼一遍吧。");
+  renderPracticeBoard();
 });
 
 loadProgress();
+resetPracticeState();
 renderAll();
