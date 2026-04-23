@@ -4,11 +4,11 @@ const scenes = [
     title: "A favourite toy shop",
     words: [
       { word: "comic", cn: "漫画书", emoji: "📘", category: "co", phonics: ["c", "o", "mic"], tip: "`co` 在这里读短音 /ko/，先读开头，再顺着结尾滑出去。" },
-      { word: "pirate", cn: "海盗", emoji: "🏴‍☠️", category: "i-e", phonics: ["p", "i-e", "rate"], tip: "`i-e` 是字母名音，先听到 /pai/，再接上后半段。" },
+      { word: "pirate", cn: "海盗", emoji: "🏴‍☠️", category: "i-e", phonics: ["p", "i-e", "rate"], spelling: ["pi", "rate"], tip: "`i-e` 是字母名音，先听到 /pai/，再接上后半段。" },
       { word: "parrot", cn: "鹦鹉", emoji: "🦜", category: "rr", phonics: ["p", "a", "rrot"], tip: "双写 `rr` 让中间的 /r/ 更明显，注意卷舌感。" },
       { word: "kitten", cn: "小猫", emoji: "🐱", category: "tt", phonics: ["k", "i", "tten"], tip: "双写 `tt` 常见在短元音后面，先读短促的 /i/ 再收尾。" },
       { word: "puppy", cn: "小狗", emoji: "🐶", category: "u", phonics: ["p", "u", "ppy"], tip: "`u` 在这里读短音 /ʌ/，嘴巴放松，读得轻快一点。" },
-      { word: "whale", cn: "鲸鱼", emoji: "🐋", category: "a-e", phonics: ["wh", "a-e", "l"], tip: "`a-e` 让 `a` 读字母名音，像先读 /wei/ 再补结尾。" }
+      { word: "whale", cn: "鲸鱼", emoji: "🐋", category: "a-e", phonics: ["wh", "a-e", "l"], spelling: ["wh", "ale"], tip: "`a-e` 让 `a` 读字母名音，像先读 /wei/ 再补结尾。" }
     ]
   },
   {
@@ -18,7 +18,7 @@ const scenes = [
       { word: "cheese", cn: "奶酪", emoji: "🧀", category: "ch + ee", phonics: ["ch", "ee", "se"], tip: "`ch` 先出 /tʃ/，`ee` 拉长读 /i:/，这是很常见的组合。" },
       { word: "bottle", cn: "瓶子", emoji: "🍾", category: "tt", phonics: ["b", "o", "ttle"], tip: "双写 `tt` 前面的 `o` 保持短音，整词节奏是 bot-tle。" },
       { word: "glass", cn: "玻璃杯", emoji: "🥛", category: "a", phonics: ["g", "la", "ss"], tip: "`a` 在这里是短音，嘴巴张开但不要拉长。" },
-      { word: "plate", cn: "盘子", emoji: "🍽️", category: "a-e", phonics: ["p", "l", "a-e", "t"], tip: "`a-e` 读 /ei/，前面的辅音连起来，像 /pleit/。" },
+      { word: "plate", cn: "盘子", emoji: "🍽️", category: "a-e", phonics: ["p", "l", "a-e", "t"], spelling: ["pl", "ate"], tip: "`a-e` 读 /ei/，前面的辅音连起来，像 /pleit/。" },
       { word: "bowl", cn: "碗", emoji: "🥣", category: "ow", phonics: ["b", "ow", "l"], tip: "`ow` 在这里读长音 /ou/，注意嘴型有滑动。" },
       { word: "cup", cn: "杯子", emoji: "☕", category: "u", phonics: ["c", "u", "p"], tip: "三个音快速拼起来：/k/ + /ʌ/ + /p/。" }
     ]
@@ -40,7 +40,7 @@ const scenes = [
     title: "Uncle Charlie's hotel",
     words: [
       { word: "room", cn: "房间", emoji: "🛏️", category: "oo", phonics: ["r", "oo", "m"], tip: "`oo` 在这里是长音 /u:/，嘴唇稍微收圆。" },
-      { word: "phone", cn: "电话", emoji: "☎️", category: "ph + o-e", phonics: ["ph", "o-e", "n"], tip: "`ph` 读 /f/，`o-e` 读字母名音 /ou/。" },
+      { word: "phone", cn: "电话", emoji: "☎️", category: "ph + o-e", phonics: ["ph", "o-e", "n"], spelling: ["ph", "one"], tip: "`ph` 读 /f/，`o-e` 读字母名音 /ou/。" },
       { word: "chair", cn: "椅子", emoji: "🪑", category: "ch + air", phonics: ["ch", "air"], tip: "`air` 一口气滑出来，别拆成太多段。" },
       { word: "book", cn: "书", emoji: "📕", category: "oo", phonics: ["b", "oo", "k"], tip: "这里的 `oo` 不是长音，而是较短的 /ʊ/，和 `room` 不一样。" },
       { word: "door", cn: "门", emoji: "🚪", category: "oo", phonics: ["d", "oo", "r"], tip: "`oo` 在这个词里更接近 /ɔ:/，可以顺便比较不同单词中的变化。" },
@@ -54,7 +54,7 @@ const scenes = [
       { word: "jungle", cn: "丛林", emoji: "🌴", category: "u", phonics: ["j", "u", "ngle"], tip: "`u` 还是短音 /ʌ/，结尾 `-gle` 轻一点带过去。" },
       { word: "mountain", cn: "山", emoji: "⛰️", category: "ou", phonics: ["m", "ou", "ntain"], tip: "`ou` 读 /au/，先张开再收口。" },
       { word: "forest", cn: "森林", emoji: "🌲", category: "or", phonics: ["f", "or", "est"], tip: "`or` 常读 /ɔːr/，注意第一个音节更重。" },
-      { word: "lake", cn: "湖", emoji: "🏞️", category: "a-e", phonics: ["l", "a-e", "k"], tip: "`a-e` 让整词像 /leik/，先把开头辅音带起来。" },
+      { word: "lake", cn: "湖", emoji: "🏞️", category: "a-e", phonics: ["l", "a-e", "k"], spelling: ["l", "ake"], tip: "`a-e` 让整词像 /leik/，先把开头辅音带起来。" },
       { word: "city", cn: "城市", emoji: "🏙️", category: "ci", phonics: ["ci", "ty"], tip: "`ci` 在这里读 /si/，看到 `c` 也要学会判断是否变成 /s/。" },
       { word: "ticket", cn: "票", emoji: "🎫", category: "ck", phonics: ["t", "i", "cket"], tip: "`ck` 保持 /k/ 音，前面的 `i` 是短音。" }
     ]
@@ -76,7 +76,7 @@ const scenes = [
     title: "Our town",
     words: [
       { word: "market", cn: "市场", emoji: "🏪", category: "ar", phonics: ["m", "ar", "ket"], tip: "`ar` 常读 /ɑːr/，声音更饱满一点。" },
-      { word: "cafe", cn: "咖啡馆", emoji: "☕", category: "a", phonics: ["c", "a", "fe"], tip: "这是借词，前面可以先按 /ka/ 去拼，再连上后面。" },
+      { word: "cafe", cn: "咖啡馆", emoji: "☕", category: "a", phonics: ["c", "a", "fe"], spelling: ["ca", "fe"], tip: "这是借词，前面可以先按 /ka/ 去拼，再连上后面。" },
       { word: "library", cn: "图书馆", emoji: "📚", category: "br", phonics: ["l", "i", "brary"], tip: "`br` 是辅音连缀，读的时候不要在中间加元音。" },
       { word: "square", cn: "广场", emoji: "⬜", category: "qu", phonics: ["s", "qu", "are"], tip: "`qu` 常一起读 /kw/，是很好认的一组。" },
       { word: "supermarket", cn: "超市", emoji: "🛒", category: "er", phonics: ["s", "u", "per", "market"], tip: "长词先分块，再拼整词，会轻松很多。" },
@@ -91,7 +91,7 @@ const scenes = [
       { word: "fishing", cn: "钓鱼", emoji: "🎣", category: "sh", phonics: ["f", "i", "shing"], tip: "`sh` 是固定组合 /ʃ/，结尾可以轻轻带过。" },
       { word: "email", cn: "电子邮件", emoji: "📧", category: "ai", phonics: ["e", "mail"], tip: "`mail` 里的 `ai` 还是 /ei/，可以借熟词帮助记忆。" },
       { word: "video", cn: "视频", emoji: "🎥", category: "eo", phonics: ["v", "i", "deo"], tip: "这个词更适合分音节感受节奏，不用每一块都机械等长。" },
-      { word: "website", cn: "网站", emoji: "💻", category: "i-e", phonics: ["w", "e", "b", "site"], tip: "`site` 里 `i-e` 读 /ai/，先认出熟悉的结尾。" },
+      { word: "website", cn: "网站", emoji: "💻", category: "i-e", phonics: ["w", "e", "b", "site"], spelling: ["web", "site"], tip: "`site` 里 `i-e` 读 /ai/，先认出熟悉的结尾。" },
       { word: "dress", cn: "连衣裙", emoji: "👗", category: "e", phonics: ["dr", "e", "ss"], tip: "`dr` 连读，`e` 短而清楚，结尾双写 `ss` 收尾。" }
     ]
   }
@@ -125,8 +125,9 @@ let phase = "study";
 let speechToken = 0;
 let activeAudio = null;
 let scenePickerVisible = false;
-let practiceLetters = [];
-let selectedLetterIds = [];
+let practicePieces = [];
+let selectedPieceIds = [];
+let spellingSolved = false;
 
 function wait(ms) {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
@@ -144,6 +145,10 @@ function getCurrentWord() {
   return getCurrentScene().words[currentWordIndex];
 }
 
+function getPracticePieces(item) {
+  return item.spelling || item.phonics;
+}
+
 function shuffleArray(items) {
   const arr = [...items];
   for (let i = arr.length - 1; i > 0; i -= 1) {
@@ -153,11 +158,11 @@ function shuffleArray(items) {
   return arr;
 }
 
-function createPracticeLetters(word) {
+function createPracticePieces(phonics) {
   return shuffleArray(
-    word.split("").map((letter, index) => ({
-      id: `${letter}-${index}`,
-      letter
+    phonics.map((piece, index) => ({
+      id: `${piece}-${index}`,
+      piece
     }))
   );
 }
@@ -282,11 +287,7 @@ async function playWordSequence(item) {
   if (wholeAudioOk && currentToken === speechToken) {
     await wait(700);
     const phonicsAudioOk = await playAudioSequence(audioSources.phonics, currentToken);
-    if (phonicsAudioOk && currentToken === speechToken) {
-      await wait(700);
-      await playAudioFile(audioSources.whole);
-      return;
-    }
+    if (phonicsAudioOk && currentToken === speechToken) return;
   }
 
   if (currentToken !== speechToken) {
@@ -304,7 +305,13 @@ async function playWordSequence(item) {
     return;
   }
 
-  await speakOnce(item.word);
+  for (const piece of item.phonics) {
+    if (currentToken !== speechToken) {
+      return;
+    }
+    await speakOnce(piece);
+    await wait(360);
+  }
 }
 
 function playTone(type) {
@@ -346,28 +353,29 @@ function setFeedback(message, type = "") {
 }
 
 function getSelectedWord() {
-  return selectedLetterIds
-    .map((id) => practiceLetters.find((item) => item.id === id)?.letter || "")
+  return selectedPieceIds
+    .map((id) => practicePieces.find((item) => item.id === id)?.piece || "")
     .join("");
 }
 
 function resetPracticeState() {
-  practiceLetters = createPracticeLetters(getCurrentWord().word);
-  selectedLetterIds = [];
+  practicePieces = createPracticePieces(getPracticePieces(getCurrentWord()));
+  selectedPieceIds = [];
+  spellingSolved = false;
   setFeedback("");
 }
 
 function renderAnswerSlots() {
-  const targetLength = getCurrentWord().word.length;
-  const selectedLetters = selectedLetterIds.map((id) => practiceLetters.find((item) => item.id === id)?.letter || "");
+  const targetLength = getPracticePieces(getCurrentWord()).length;
+  const selectedPieces = selectedPieceIds.map((id) => practicePieces.find((item) => item.id === id)?.piece || "");
   const html = [];
 
   for (let i = 0; i < targetLength; i += 1) {
-    const letter = selectedLetters[i];
-    if (letter) {
-      const selectedId = selectedLetterIds[i];
+    const piece = selectedPieces[i];
+    if (piece) {
+      const selectedId = selectedPieceIds[i];
       html.push(
-        `<button class="answer-slot" type="button" data-selected-id="${selectedId}" aria-label="移除字母 ${letter}">${letter}</button>`
+        `<button class="answer-slot" type="button" data-selected-id="${selectedId}" aria-label="移除拼读块 ${piece}" ${spellingSolved ? "disabled" : ""}>${piece}</button>`
       );
     } else {
       html.push('<span class="answer-slot is-empty" aria-hidden="true">_</span>');
@@ -378,27 +386,32 @@ function renderAnswerSlots() {
 
   answerSlots.querySelectorAll("[data-selected-id]").forEach((button) => {
     button.addEventListener("click", () => {
-      selectedLetterIds = selectedLetterIds.filter((id) => id !== button.dataset.selectedId);
+      if (spellingSolved) {
+        return;
+      }
+      selectedPieceIds = selectedPieceIds.filter((id) => id !== button.dataset.selectedId);
+      setFeedback("");
       renderPracticeBoard();
     });
   });
 }
 
 function renderLetterBank() {
-  letterBank.innerHTML = practiceLetters
+  letterBank.innerHTML = practicePieces
     .map((item) => {
-      const used = selectedLetterIds.includes(item.id);
-      return `<button class="letter-btn" type="button" data-letter-id="${item.id}" ${used ? "disabled" : ""}>${item.letter}</button>`;
+      const used = selectedPieceIds.includes(item.id);
+      return `<button class="letter-btn" type="button" data-piece-id="${item.id}" ${used || spellingSolved ? "disabled" : ""}>${item.piece}</button>`;
     })
     .join("");
 
-  letterBank.querySelectorAll("[data-letter-id]").forEach((button) => {
+  letterBank.querySelectorAll("[data-piece-id]").forEach((button) => {
     button.addEventListener("click", () => {
-      const { letterId } = button.dataset;
-      if (selectedLetterIds.includes(letterId)) {
+      const { pieceId } = button.dataset;
+      if (spellingSolved || selectedPieceIds.includes(pieceId)) {
         return;
       }
-      selectedLetterIds.push(letterId);
+      selectedPieceIds.push(pieceId);
+      setFeedback("");
       renderPracticeBoard();
     });
   });
@@ -407,8 +420,8 @@ function renderLetterBank() {
 function renderPracticeBoard() {
   renderAnswerSlots();
   renderLetterBank();
-  confirmBtn.disabled = selectedLetterIds.length !== getCurrentWord().word.length;
-  clearBtn.disabled = selectedLetterIds.length === 0;
+  confirmBtn.disabled = spellingSolved || selectedPieceIds.length !== getPracticePieces(getCurrentWord()).length;
+  clearBtn.disabled = spellingSolved || selectedPieceIds.length === 0;
 }
 
 function renderScenePicker() {
@@ -448,14 +461,17 @@ function renderCurrentWord() {
   sceneMeta.textContent = `场景 ${currentSceneIndex + 1} / ${scenes.length} · ${isPractice ? "拼字练习" : "学习朗读"}`;
   wordEmoji.textContent = item.emoji;
   wordCn.textContent = item.cn;
-  wordText.textContent = isPractice ? "拼一拼这个单词" : item.word;
-  wordText.classList.toggle("is-hidden", isPractice);
+  wordText.textContent = isPractice && !spellingSolved ? "拼一拼" : item.word;
+  wordText.classList.toggle("is-hidden", isPractice && !spellingSolved);
   practiceHint.hidden = !isPractice;
+  phonicsBreakdown.hidden = isPractice;
   phonicsBreakdown.innerHTML = item.phonics
     .map((piece) => `<span class="phonics-chip">${piece}</span>`)
     .join("");
-  phonicsTip.textContent = isPractice ? "提示：可以先看音块顺序，再去字母里找对应部分。" : item.tip;
+  phonicsTip.textContent = isPractice ? "选项是打乱后的自然拼读块，点已选块可以撤回。" : item.tip;
   practicePanel.hidden = !isPractice;
+  nextBtn.textContent = isPractice && spellingSolved ? "下一个单词" : "下一步";
+  replayBtn.hidden = isPractice;
 
   if (isPractice) {
     renderPracticeBoard();
@@ -474,7 +490,7 @@ function renderAll() {
 function moveToNextWord() {
   const scene = getCurrentScene();
   currentWordIndex = (currentWordIndex + 1) % scene.words.length;
-  phase = "practice";
+  phase = "study";
   resetPracticeState();
   saveProgress();
   renderCurrentWord();
@@ -486,14 +502,24 @@ sceneTag.addEventListener("click", () => {
 });
 
 replayBtn.addEventListener("click", () => {
-  if (phase === "practice") {
-    setFeedback("先把字母拼出来，再按“确定”试试看。");
-    return;
-  }
   playWordSequence(getCurrentWord());
 });
 
 nextBtn.addEventListener("click", () => {
+  if (phase === "study") {
+    phase = "practice";
+    resetPracticeState();
+    saveProgress();
+    renderCurrentWord();
+    return;
+  }
+
+  if (!spellingSolved) {
+    playTone("error");
+    setFeedback("先完成拼写并点“确定”，答对后再进入下一个单词。", "error");
+    return;
+  }
+
   moveToNextWord();
 });
 
@@ -502,11 +528,14 @@ confirmBtn.addEventListener("click", () => {
   const correct = getCurrentWord().word.toLowerCase();
 
   if (attempt === correct) {
-    phase = "study";
+    spellingSolved = true;
     saveProgress();
     playTone("success");
-    setFeedback("答对了，真棒！已经帮你切回学习卡片。", "success");
+    wordText.textContent = getCurrentWord().word;
+    wordText.classList.remove("is-hidden");
+    setFeedback("答对了！点击“下一个单词”继续。", "success");
     renderCurrentWord();
+    setFeedback("答对了！点击“下一个单词”继续。", "success");
     return;
   }
 
@@ -515,7 +544,7 @@ confirmBtn.addEventListener("click", () => {
 });
 
 clearBtn.addEventListener("click", () => {
-  selectedLetterIds = [];
+  selectedPieceIds = [];
   setFeedback("已清空，重新拼一遍吧。");
   renderPracticeBoard();
 });
